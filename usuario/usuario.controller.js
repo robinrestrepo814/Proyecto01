@@ -14,19 +14,37 @@ async function readUserWithFilters(query) {
 async function createUser(data) {
     const { name, password } = data;
 
-    const userCreated = await createUserMongo(data);
+    // Hashear la contraseña antes de guardar el usuario
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Pasar la contraseña hasheada junto con otros datos del usuario
+    const userData = {
+        ...data,
+        password: hashedPassword
+    };
+
+    const userCreated = await createUserMongo(userData);
 
     return userCreated;
 }
 
+async function updateUser(data) {
+    const { _id, password, ...otherChanges } = data;
 
-function updateUser(data) {
-    const { _id, ...changes } = data;
+    // Solo hashear la contraseña si se proporciona una nueva
+    let changes = otherChanges;
+    if (password) {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        changes = { ...otherChanges, password: hashedPassword };
+    }
 
-    const userUpdated = updateUserMongo(_id, changes);
+    const userUpdated = await updateUserMongo(_id, changes);
 
     return userUpdated;
 }
+
 
 function deleteUser(id) {
 
@@ -34,14 +52,6 @@ function deleteUser(id) {
 
     return userDeleted;
 }
-
-module.exports = {
-    readUserWithFilters,
-    createUser,
-    updateUser,
-    deleteUser
-}
-
 
 module.exports = {
     readUserWithFilters,

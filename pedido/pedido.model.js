@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
     date: {type: Date, required: true},
-    status: {type: String, required: true},
+    status: {type: String, required: true, default: "In Progress"},
     bookList: {type: [String], required: true},
     requesterId: {type: String, required: true, default: " "},
     receiverId: {type: String, required: true, default: " "},

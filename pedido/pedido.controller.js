@@ -29,7 +29,6 @@ async function readOrderWithFilters(query) {
 }
 
 async function createOrder(data) {
-    validateStatus(data.status);
     const orderCreated = await createOrderMongo(data);
     return orderCreated;
 }
